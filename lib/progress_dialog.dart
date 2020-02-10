@@ -6,6 +6,7 @@ enum ProgressDialogType { Normal, Download, Media }
 String _dialogMessage = "Loading...";
 double _progress = 0.0, _maxProgress = 100.0;
 double _dialogHeight = 100;
+double _dialogWidth = 100;
 
 bool _isShowing = false;
 BuildContext _context, _dismissingContext;
@@ -39,6 +40,7 @@ class ProgressDialog {
 
   void style(
       {double height,
+      double width,
       double progress,
       double maxProgress,
       String message,
@@ -54,6 +56,7 @@ class ProgressDialog {
       _progress = progress ?? _progress;
     }
     _dialogHeight = height ?? _dialogHeight;
+    _dialogWidth = width ?? _dialogWidth;
     _dialogMessage = message ?? _dialogMessage;
     _maxProgress = maxProgress ?? _maxProgress;
     _progressWidget = progressWidget ?? _progressWidget;
@@ -185,8 +188,8 @@ class _BodyState extends State<_Body> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: _dialogHeight,
+      width: _dialogWidth,
       child: Row(children: <Widget>[
-        const SizedBox(width: 10.0),
         _progressWidget,
         Visibility(
           visible: _progressDialogType != ProgressDialogType.Media,
@@ -215,7 +218,6 @@ class _BodyState extends State<_Body> {
             ],
           ),
         ),
-        const SizedBox(width: 10.0)
       ]),
     );
   }
