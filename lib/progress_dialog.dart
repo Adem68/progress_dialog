@@ -186,11 +186,14 @@ class _BodyState extends State<_Body> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      padding: EdgeInsets.zero,
       height: _dialogHeight,
       width: _dialogWidth,
       child: Row(children: <Widget>[
-        _progressWidget,
+        Center(
+          child: _progressWidget,
+        ),
         Visibility(
           visible: _progressDialogType != ProgressDialogType.Media,
           child: Column(
