@@ -186,8 +186,7 @@ class _BodyState extends State<_Body> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.zero,
+    return SizedBox(
       height: _dialogHeight,
       width: _dialogWidth,
       child: Row(children: <Widget>[
