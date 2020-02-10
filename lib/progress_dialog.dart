@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-enum ProgressDialogType { Normal, Download }
+enum ProgressDialogType { Normal, Download, Media }
 
 String _dialogMessage = "Loading...";
 double _progress = 0.0, _maxProgress = 100.0;
+double _dialogHeight = 100;
 
 bool _isShowing = false;
 BuildContext _context, _dismissingContext;
@@ -37,7 +38,8 @@ class ProgressDialog {
   }
 
   void style(
-      {double progress,
+      {double height,
+      double progress,
       double maxProgress,
       String message,
       Widget progressWidget,
@@ -51,7 +53,7 @@ class ProgressDialog {
     if (_progressDialogType == ProgressDialogType.Download) {
       _progress = progress ?? _progress;
     }
-
+    _dialogHeight = height ?? _dialogHeight;
     _dialogMessage = message ?? _dialogMessage;
     _maxProgress = maxProgress ?? _maxProgress;
     _progressWidget = progressWidget ?? _progressWidget;
@@ -119,41 +121,36 @@ class ProgressDialog {
     }
   }
 
-  Future<bool> show() async {
+  void show() {
     if (!_isShowing) {
-      try {
-        _dialog = new _Body();
-        showDialog<dynamic>(
-          context: _context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            _dismissingContext = context;
-            return WillPopScope(
-              onWillPop: () async => _barrierDismissible,
-              child: Dialog(
-                  backgroundColor: _backgroundColor,
-                  insetAnimationCurve: _insetAnimCurve,
-                  insetAnimationDuration: Duration(milliseconds: 100),
-                  elevation: _dialogElevation,
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.all(Radius.circular(_borderRadius))),
-                  child: _dialog),
-            );
-          },
-        );
-        // Delaying the function for 200 milliseconds
-        // [Default transitionDuration of DialogRoute]
-        await Future.delayed(Duration(milliseconds: 200));
-        if (_showLogs) debugPrint('ProgressDialog shown');
-        _isShowing = true;
-        return true;
-      } catch (_) {
-        return false;
-      }
+      _dialog = new _Body();
+      _isShowing = true;
+
+      if (_showLogs) debugPrint('ProgressDialog shown');
+
+      showDialog<dynamic>(
+        context: _context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          _dismissingContext = context;
+          return WillPopScope(
+            onWillPop: () {
+              return Future.value(_barrierDismissible);
+            },
+            child: Dialog(
+                backgroundColor: _backgroundColor,
+                insetAnimationCurve: _insetAnimCurve,
+                insetAnimationDuration: Duration(milliseconds: 100),
+                elevation: _dialogElevation,
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(_borderRadius))),
+                child: _dialog),
+          );
+        },
+      );
     } else {
       if (_showLogs) debugPrint("ProgressDialog already shown/showing");
-      return false;
     }
   }
 }
@@ -187,33 +184,36 @@ class _BodyState extends State<_Body> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100.0,
+      height: _dialogHeight,
       child: Row(children: <Widget>[
         const SizedBox(width: 10.0),
-        SizedBox(
-          width: 60.0,
-          height: 60.0,
-          child: _progressWidget,
-        ),
-        const SizedBox(width: 15.0),
-        Expanded(
-          child: _progressDialogType == ProgressDialogType.Normal
-              ? Text(_dialogMessage,
-                  textAlign: TextAlign.justify, style: _messageStyle)
-              : Stack(
-                  children: <Widget>[
-                    Positioned(
-                      child: Text(_dialogMessage, style: _messageStyle),
-                      top: 30.0,
-                    ),
-                    Positioned(
-                      child: Text("$_progress/$_maxProgress",
-                          style: _progressTextStyle),
-                      bottom: 10.0,
-                      right: 10.0,
-                    ),
-                  ],
-                ),
+        _progressWidget,
+        Visibility(
+          visible: _progressDialogType != ProgressDialogType.Media,
+          child: Column(
+            children: <Widget>[
+              const SizedBox(width: 15.0),
+              Expanded(
+                child: _progressDialogType == ProgressDialogType.Normal
+                    ? Text(_dialogMessage,
+                        textAlign: TextAlign.justify, style: _messageStyle)
+                    : Stack(
+                        children: <Widget>[
+                          Positioned(
+                            child: Text(_dialogMessage, style: _messageStyle),
+                            top: 30.0,
+                          ),
+                          Positioned(
+                            child: Text("$_progress/$_maxProgress",
+                                style: _progressTextStyle),
+                            bottom: 10.0,
+                            right: 10.0,
+                          ),
+                        ],
+                      ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(width: 10.0)
       ]),
