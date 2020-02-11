@@ -186,12 +186,16 @@ class _BodyState extends State<_Body> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       height: _dialogHeight,
       width: _dialogWidth,
       child: Row(children: <Widget>[
         Center(
           child: _progressWidget,
+        ),
+        Visibility(
+          visible: _progressDialogType == ProgressDialogType.Media && _dialogMessage != null,
+          child: Center(child: Text(_dialogMessage, style: _messageStyle,),),
         ),
         Visibility(
           visible: _progressDialogType != ProgressDialogType.Media,
@@ -205,7 +209,7 @@ class _BodyState extends State<_Body> {
                     : Stack(
                         children: <Widget>[
                           Positioned(
-                            child: Text(_dialogMessage, style: _messageStyle),
+                            child: Text(_dialogMessage, style: ),
                             top: 30.0,
                           ),
                           Positioned(
