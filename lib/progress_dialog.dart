@@ -195,7 +195,7 @@ class _BodyState extends State<_Body> {
         ),
         Visibility(
           visible: _progressDialogType == ProgressDialogType.Media && _dialogMessage != null,
-          child: Center(child: Text(_dialogMessage)),
+          child: Center(child: Text(_dialogMessage, style: _messageStyle)),
         ),
         Visibility(
           visible: _progressDialogType != ProgressDialogType.Media,
@@ -209,7 +209,7 @@ class _BodyState extends State<_Body> {
                     : Stack(
                         children: <Widget>[
                           Positioned(
-                            child: Text(_dialogMessage, style: ),
+                            child: Text(_dialogMessage, style: _messageStyle),
                             top: 30.0,
                           ),
                           Positioned(
