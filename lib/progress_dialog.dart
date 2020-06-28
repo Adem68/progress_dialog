@@ -195,7 +195,7 @@ class _BodyState extends State<_Body> {
         ),
         Visibility(
           visible: _progressDialogType == ProgressDialogType.Media && _dialogMessage != null,
-          child: Center(child: Text(_dialogMessage, style: _messageStyle)),
+          child: Center(child: Expanded(child: Text(_dialogMessage, overflow: TextOverflow.ellipsis, style: _messageStyle))),
         ),
         Visibility(
           visible: _progressDialogType != ProgressDialogType.Media,
